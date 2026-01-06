@@ -1,0 +1,35 @@
+- name: Create group and configure it
+  hosts: skillfactory
+  gather_facts: no
+  become: yes
+  vars:
+   user2_password_hash: "{{ lookup('file', 'user2_password.txt') | trim }}"
+   user3_password_hash: "{{ lookup('file', 'user3_password.txt') |trim }}"
+
+  tasks:
+   - name: create group
+     group:
+      name: superusers
+      state: present
+
+   - name: create user2
+     user:
+      name: user2 
+      groups: superusers
+      password: "{{ user2_password_hash }}"
+      update_password: on_create
+
+   - name: create user3
+     user:
+      name: user3
+      groups: superusers
+      password: "{{ user3_password_hash }}"
+      update_password: on_create
+
+   - name: root role
+     lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^%superusers'
+      line: '%superusers ALL=(ALL) NOPASSWD:ALL'
+      validate: 'visudo -cf %s'
