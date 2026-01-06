@@ -1,0 +1,14 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for dnsmasq
+- name: install dnsmasq
+  apt:
+   name: dnsmasq
+   state: present
+  become: yes
+
+- name: start dnsmasq
+  service:
+   name: dnsmasq
+   state: started
+   enabled: true
